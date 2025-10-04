@@ -49,7 +49,7 @@
       <v-window-item class="w-100 h-100">
         <v-card variant="outlined" class="pa-2 mb-6 h-100">
           <v-card-title>Huhn Animiert</v-card-title>
-          <div class="animated-chicken">
+          <div class="animated-chicken" role="img" aria-label="Animiertes Huhn läuft hin und her">
             <span class="chicken-animation">🐔</span>
           </div>
         </v-card>
@@ -70,30 +70,31 @@ export default {
   data() {
     return {
       activeSlide: 0,
-      currentScrollPosition: 0,
-      isScrolling: false,
       scrollBuffer: 0,
       edgeBuffer: 0,
-      requiredBufferScrolls: 8
+      requiredBufferScrolls: 8,
+      maxEdgeBuffer: 5,
     }
   },
   methods: {
     handleWheelScroll(event) {
       const dy = event.deltaY
-      // Nur reagieren, wenn wirklich vertikal
+
+      // Früher return für bessere Performance
       if (Math.abs(dy) < 1) return
 
-      // Am Rand: Edge-Puffer erhöhen und Seite scrollen lassen
-      if ((dy > 0 && this.atLast) || (dy < 0 && this.atFirst)) {
+      // Logik vereinfachen
+      const isAtEdge = (dy > 0 && this.atLast) || (dy < 0 && this.atFirst)
+
+      if (isAtEdge) {
         this.edgeBuffer++
         if (this.edgeBuffer < this.maxEdgeBuffer) {
           event.preventDefault()
         }
         return
-      } else {
-        this.edgeBuffer = 0
       }
 
+      this.edgeBuffer = 0
       this.scrollBuffer++
 
       if (this.scrollBuffer < this.requiredBufferScrolls) {
@@ -101,26 +102,30 @@ export default {
         return
       }
 
+      // Navigation
       if (dy > 0 && !this.atLast) {
         this.activeSlide++
-        event.preventDefault()
       } else if (dy < 0 && !this.atFirst) {
         this.activeSlide--
-        event.preventDefault()
       }
 
       this.scrollBuffer = 0
-    },
+      event.preventDefault()
+    }
   },
   mounted() {
-    this.$el.addEventListener('wheel', this.handleWheelScroll, { passive: false })
+    // Passive: false nur wenn nötig, sonst Performance-Einbuße
+    this.$el.addEventListener('wheel', this.handleWheelScroll, {
+      passive: false,
+      capture: false // Explizit für Klarheit
+    })
   },
   beforeUnmount() {
     this.$el.removeEventListener('wheel', this.handleWheelScroll)
   },
   computed: {
     totalSlides() {
-      return 5 // TODO: Anzahl deiner v-window-item aktualisieren oder dynamisch zählen
+      return this.$refs.horizontalContainer?.$el?.children?.length || 5
     },
     atFirst() {
       return this.activeSlide === 0
@@ -140,6 +145,11 @@ export default {
   height: 100vh;
   width: 100vw;
   overflow-y: hidden;
+
+  /* Fehlende CSS Variablen definieren */
+  --breed-card-width: 100%;
+  --breed-card-height: 100%;
+
   /* chip theme vars */
   --specialty-chip-bg: #8B4513;
   --specialty-chip-bg-hover: #A96122;
@@ -197,7 +207,7 @@ export default {
   color: #8B4513 !important;
   font-family: 'Georgia', serif !important;
   /* Fluid zwischen 2rem (klein), 6vw (dynamisch), 3.5rem (max) */
-  font-size: clamp(1.5rem, 6vw, 3.5rem) !important;
+  font-size: clamp(1.2rem, 4vw, 2.5rem) !important;
   font-weight: bold !important;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1) !important;
   line-height: 1.1 !important;
@@ -206,7 +216,7 @@ export default {
 
 :deep(.v-card-text) {
   color: #654321 !important;
-  font-size: clamp(0.5rem, 6vw, 1.5rem) !important;
+  font-size: clamp(0.875rem, 3vw, 1.2rem) !important;
   line-height: 1.6 !important;
 }
 
