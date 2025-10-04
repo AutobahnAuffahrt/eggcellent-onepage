@@ -1,67 +1,60 @@
 <template>
   <div class="breed-section-inner">
-    <!-- Left side: Breed info -->
-    <div class="breed-header">
-      <h1 class="breed-name">{{ breed.name }}</h1>
-    </div>
-    <div class="horizontal-scroll" ref="horizontalContainer">
-      <div class="scroll-item">
-        <div class="scroll-rect">
-          <h2 class="item-header">Beschreibung</h2>
-          <p class="breed-description">{{ breed.description }}</p>
-        </div>
-      </div>
+    <v-card variant="tonal" class="w-100 pa-4 mb-6" elevation="2" style="position:sticky;top:0;z-index:10;">
+      <v-card-title class="text-h3">
+        {{ breed.name }}
+      </v-card-title>
+    </v-card>
+    <v-window class="w-75 h-75" ref="horizontalContainer" show-arrows="hover" v-model="activeSlide">
+      <v-window-item class="w-100 h-100">
+        <v-card title="Beschreibung" :text="breed.description" class="pa-2 mb-6 h-100 breed-card" variant="outlined" />
+      </v-window-item>
 
-      <div class="scroll-item">
-        <div class="scroll-rect">
-          <div class="our-chickens">
-            <h2 class="item-header">Unsere {{ breed.name }} Hühner</h2>
-            <div class="chicken-names">
-              <span v-for="chicken in breed.ourChickens" :key="chicken" class="chicken-name">
-                🐔 {{ chicken }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <v-window-item class="w-100 h-100">
+        <v-card class="pa-2 mb-6 h-100" variant="outlined">
+          <v-list density="compact">
+            <v-card-title>Unsere {{ breed.name }} Hühner</v-card-title>
+            <v-list-item v-for="chicken in breed.ourChickens" :key="chicken">
+              <template #prepend>
+                <v-avatar class="chicken-avatar" size="32">
+                  <span class="chicken-head">🐔</span>
+                </v-avatar>
+              </template>
+              <v-list-item-title>{{ chicken }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-window-item>
 
-      <div class="scroll-item">
-        <div class="scroll-rect">
-          <div class="specialties">
-            <h2 class="item-header">Besondere Merkmale</h2>
-            <ul class="specialties-list">
-              <li v-for="specialty in breed.specialties" :key="specialty" class="specialty-item">
-                ✨ {{ specialty }}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <v-window-item class="w-100 h-100">
+        <v-card variant="outlined" class="pa-2 mb-6 h-100">
+          <v-card-title>Besondere Merkmale</v-card-title>
+          <v-chip-group column class="d-flex flex-wrap gap-2">
+            <v-chip v-for="s in breed.specialties" :key="s" size="large" class="specialty-chip"
+              prepend-icon="mdi-sparkles" variant="elevated">
+              ✨ {{ s }}
+            </v-chip>
+          </v-chip-group>
+        </v-card>
+      </v-window-item>
 
-      <div class="scroll-item">
-        <div class="scroll-rect">
-          <h2 class="item-header">Foto</h2>
-          <div class="breed-image">
-            <div class="image-placeholder">
-              <img :src="breed.image" :alt="`${breed.name} image`" class="breed-photo" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="scroll-item">
-        <div class="scroll-rect">
-          <h2 class="item-header">Huhn Animiert</h2>
+      <v-window-item class="w-100 h-100">
+        <v-card variant="outlined" class="pa-2 mb-6 h-100">
+          <v-card-title>Foto</v-card-title>
+          <v-img class="justify-center mx-auto d-block" :width="300" aspect-ratio="1/1" cover :src="breed.image"
+            alt="Foto von {{ breed.name }}" />
+        </v-card>
+      </v-window-item>
+
+      <v-window-item class="w-100 h-100">
+        <v-card variant="outlined" class="pa-2 mb-6 h-100">
+          <v-card-title>Huhn Animiert</v-card-title>
           <div class="animated-chicken">
             <span class="chicken-animation">🐔</span>
           </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Animated chicken will go here later -->
-
-
+        </v-card>
+      </v-window-item>
+    </v-window>
   </div>
 </template>
 
@@ -76,68 +69,65 @@ export default {
   },
   data() {
     return {
+      activeSlide: 0,
       currentScrollPosition: 0,
       isScrolling: false,
       scrollBuffer: 0,
+      edgeBuffer: 0,
       requiredBufferScrolls: 8
     }
   },
   methods: {
     handleWheelScroll(event) {
-      if (event.deltaY != 0)
-        this.isScrolling = true;
-      else
-        this.isScrolling = false;
+      const dy = event.deltaY
+      // Nur reagieren, wenn wirklich vertikal
+      if (Math.abs(dy) < 1) return
 
-
-      // Optional: Implement horizontal scroll on vertical wheel event
-      const container = this.$refs.horizontalContainer
-
-      if (container) {
-        const atStart = container.scrollLeft === 0
-        const atEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth
-        if (event.deltaY < 0 && atStart) {
-
-          this.scrollBuffer++;
-          if (this.scrollBuffer >= this.requiredBufferScrolls) {
-            return; // Prevent scrolling if at the edges
-          } else {
-            event.preventDefault();// Reset buffer after allowing horizontal scroll
-          }
-        } else if (event.deltaY > 0 && atEnd) {
-
-          this.scrollBuffer++;
-          if (this.scrollBuffer >= this.requiredBufferScrolls) {
-            return; // Prevent scrolling if at the edges
-          } else {
-            event.preventDefault(); // Reset buffer after allowing horizontal scroll
-          }
-        } else {
-          container.scrollLeft += event.deltaY
+      // Am Rand: Edge-Puffer erhöhen und Seite scrollen lassen
+      if ((dy > 0 && this.atLast) || (dy < 0 && this.atFirst)) {
+        this.edgeBuffer++
+        if (this.edgeBuffer < this.maxEdgeBuffer) {
           event.preventDefault()
-          this.scrollBuffer = 0;
         }
-
+        return
+      } else {
+        this.edgeBuffer = 0
       }
+
+      this.scrollBuffer++
+
+      if (this.scrollBuffer < this.requiredBufferScrolls) {
+        event.preventDefault()
+        return
+      }
+
+      if (dy > 0 && !this.atLast) {
+        this.activeSlide++
+        event.preventDefault()
+      } else if (dy < 0 && !this.atFirst) {
+        this.activeSlide--
+        event.preventDefault()
+      }
+
+      this.scrollBuffer = 0
     },
   },
   mounted() {
-
     this.$el.addEventListener('wheel', this.handleWheelScroll, { passive: false })
-
   },
   beforeUnmount() {
-
     this.$el.removeEventListener('wheel', this.handleWheelScroll)
   },
   computed: {
-    isAtScrollStart() {
-      return this.$refs.horizontalContainer.scrollLeft === 0;
+    totalSlides() {
+      return 5 // TODO: Anzahl deiner v-window-item aktualisieren oder dynamisch zählen
     },
-
-    isAtScrollEnd() {
-      return this.$refs.horizontalContainer.scrollLeft + this.$refs.horizontalContainer.clientWidth >= this.$refs.horizontalContainer.scrollWidth;
+    atFirst() {
+      return this.activeSlide === 0
     },
+    atLast() {
+      return this.activeSlide === this.totalSlides - 1
+    }
   },
 }
 </script>
@@ -150,128 +140,24 @@ export default {
   height: 100vh;
   width: 100vw;
   overflow-y: hidden;
+  /* chip theme vars */
+  --specialty-chip-bg: #8B4513;
+  --specialty-chip-bg-hover: #A96122;
+  --specialty-chip-icon: #FFD479;
 }
 
-.breed-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Left side: Breed information */
-.breed-info {
-  padding: 2rem;
-}
-
-.breed-name {
-  font-size: 3.5rem;
-  margin-bottom: 1.5rem;
-  font-family: 'Georgia', serif;
-  color: #8B4513;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.item-header {
-  font-size: 3.5rem;
-  margin-bottom: 1.5rem;
-  font-family: 'Georgia', serif;
-  color: #8B4513;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.breed-description {
-  font-size: 1.3rem;
-  line-height: 1.8;
-  margin-bottom: 2rem;
-  color: #654321;
-}
-
-.our-chickens {
-  margin-bottom: 2rem;
-}
-
-.our-chickens h3 {
-  font-size: 1.5rem;
-  color: #8B4513;
-  margin-bottom: 1rem;
-}
-
-.chicken-names {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.chicken-name {
-  background: #DEB887;
-  color: #654321;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: bold;
-  border: 2px solid #CD853F;
-}
-
-.specialties h3 {
-  font-size: 1.5rem;
-  color: #8B4513;
-  margin-bottom: 1rem;
-}
-
-.specialties-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.specialty-item {
-  background: rgba(139, 69, 19, 0.1);
-  margin: 0.5rem 0;
-  padding: 0.8rem;
-  border-radius: 8px;
-  border-left: 4px solid #8B4513;
-  font-size: 1.1rem;
-}
-
-/* Right side: Image and animation */
-.breed-image {
+.breed-card {
+  width: var(--breed-card-width);
+  height: var(--breed-card-height);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  padding: 2rem;
 }
 
-.image-placeholder {
-  width: 300px;
-  height: 300px;
-  background: rgba(139, 69, 19, 0.1);
-  border: 3px dashed #8B4513;
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.placeholder-text {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
-
-.image-placeholder p {
-  font-size: 1.2rem;
-  color: #8B4513;
-  margin: 0.5rem 0;
-  font-weight: bold;
-}
-
-.image-placeholder small {
-  font-size: 0.9rem;
-  color: #999;
-  font-style: italic;
+.breed-card :deep(.v-card-text),
+.breed-card :deep(.v-list) {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 /* Animated chicken */
@@ -299,72 +185,56 @@ export default {
   }
 }
 
-/* Mobile responsiveness */
-@media (max-width: 968px) {
-  .breed-content {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    text-align: center;
-  }
-
-  .breed-name {
-    font-size: 2.5rem;
-  }
-
-  .breed-description {
-    font-size: 1.1rem;
-  }
-
-  .image-placeholder {
-    width: 250px;
-    height: 250px;
-  }
+/* Vuetify Card Styling */
+:deep(.v-card) {
+  background: rgba(139, 69, 19, 0.05) !important;
+  border: 2px solid #CD853F !important;
+  border-radius: 15px !important;
+  box-shadow: 0 4px 8px rgba(139, 69, 19, 0.2) !important;
 }
 
-@media (max-width: 640px) {
-  .breed-content {
-    padding: 1rem;
-  }
-
-  .breed-name {
-    font-size: 2rem;
-  }
-
-  .chicken-names {
-    justify-content: center;
-  }
-
-  .image-placeholder {
-    width: 200px;
-    height: 200px;
-  }
+:deep(.v-card-title) {
+  color: #8B4513 !important;
+  font-family: 'Georgia', serif !important;
+  font-size: 3.5rem !important;
+  font-weight: bold !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1) !important;
+  margin-bottom: 1.5rem !important;
 }
 
-
-
-.scroll-item {
-  min-width: 40vw;
-  width: 200vw;
-  height: 50vh;
-  border-radius: 15px;
-  padding: 2rem;
-
+:deep(.v-card-text) {
+  color: #654321 !important;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
 }
 
-.scroll-rect {
-  width: 100%;
-  height: 100%;
-  border: 2px dashed #CD853F;
-  border-radius: 15px;
-  padding: 3rem;
-  flex-direction: column;
+:deep(.v-list) {
+  background: transparent !important;
 }
 
-.breed-photo {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 10px;
-  object-fit: cover;
-  padding: 1rem;
+/* Specialty chips */
+:deep(.specialty-chip) {
+  background-color: var(--specialty-chip-bg) !important;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: 2px solid #CD853F !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: background-color 0.25s ease, transform 0.2s ease;
+}
+
+:deep(.specialty-chip .v-icon) {
+  color: var(--specialty-chip-icon) !important;
+  opacity: 0.9;
+}
+
+:deep(.specialty-chip:hover) {
+  background-color: var(--specialty-chip-bg-hover) !important;
+  transform: translateY(-2px);
+}
+
+:deep(.specialty-chip:active) {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 </style>
