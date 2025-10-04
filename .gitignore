@@ -28,3 +28,7 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+.github/copilot*
+
+src/assets/Fotos*
