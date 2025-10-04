@@ -196,20 +196,28 @@ export default {
 :deep(.v-card-title) {
   color: #8B4513 !important;
   font-family: 'Georgia', serif !important;
-  font-size: 3.5rem !important;
+  /* Fluid zwischen 2rem (klein), 6vw (dynamisch), 3.5rem (max) */
+  font-size: clamp(1.5rem, 6vw, 3.5rem) !important;
   font-weight: bold !important;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1) !important;
-  margin-bottom: 1.5rem !important;
+  line-height: 1.1 !important;
+  margin-bottom: 1.2rem !important;
 }
 
 :deep(.v-card-text) {
   color: #654321 !important;
-  font-size: 1.1rem !important;
+  font-size: clamp(0.5rem, 6vw, 1.5rem) !important;
   line-height: 1.6 !important;
 }
 
 :deep(.v-list) {
   background: transparent !important;
+}
+
+:deep(.v-list-item-title) {
+  font-size: clamp(0.5rem, 6vw, 1.2rem) !important;
+  color: #5A3E1B !important;
+  font-weight: 500 !important;
 }
 
 /* Specialty chips */
