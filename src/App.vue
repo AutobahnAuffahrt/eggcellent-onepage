@@ -19,15 +19,6 @@ export default {
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import "animate.css/animate.min.css";
 
-.horizontal-scroll {
-  display: flex;
-  overflow-x: hidden;
-  overflow-y: hidden;
-  align-items: center;
-  width: 100vw;
-  height: 100vh;
-  /* scroll-snap-type: x mandatory; */
-}
 
 /* Hide scrollbar while keeping functionality */
 body::-webkit-scrollbar {

@@ -1,19 +1,93 @@
 <template>
-  <div>
-    <div class="coop-content">
-      <h1>{{ coopInfo.title }}</h1>
-      <p class="coop-description">{{ coopInfo.description }}</p>
-      <!-- Coop details will be added later -->
-    </div>
-    <div class="coop-images">
-      <div class="horizontal-scroll" ref="horizontalContainer">
-        <div class="scroll-item" v-for="(item, index) in coopInfo.sections" :key="index">
-          <h2>{{ item.title }}</h2>
-          <p>{{ item.content }}</p>
-          <img :src="item.image" alt="" />
-        </div>
-      </div>
-    </div>
+  <div class="coop-section-inner d-flex flex-column align-center h-screen w-100" style="width:100vw;overflow:hidden;">
+    <v-card variant="tonal" class="w-100 pa-4 mb-6 d-flex flex-column" elevation="2"
+      style="position:sticky;top:0;z-index:10;">
+      <v-card-title class="font-weight-bold text-h3 text-sm-h2 text-coop_title">
+        {{ coopInfo.title }}
+      </v-card-title>
+      <v-card-subtitle class="text-h6 text-sm-h5 text-coop_text">
+        {{ coopInfo.description }}
+      </v-card-subtitle>
+    </v-card>
+
+    <v-window class="w-75 h-75 text-coop_text" ref="horizontalContainer" show-arrows="hover" v-model="activeSlide">
+      <template v-slot:prev="{ props }">
+        <v-btn icon color="primary" @click="props.onClick">
+          <v-icon>mdi-chevron-left</v-icon>
+        </v-btn>
+      </template>
+      <template v-slot:next="{ props }">
+        <v-btn icon color="primary" @click="props.onClick">
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+      </template>
+
+      <v-window-item v-for="(item, index) in coopInfo.sections" :key="index" class="w-100 h-100">
+        <v-card :class="cardClass" color="rgba(65, 105, 225, 0.05)">
+          <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-coop_title">{{ item.title }}</v-card-title>
+          <v-card-text class="overflow-y-auto text-h6 text-sm-h6 text-xl-h5 text-coop_text mb-4">{{ item.content
+            }}</v-card-text>
+          <div class="d-flex justify-center">
+            <v-img :src="item.image" :alt="`Foto von ${item.title}`" class="pl-16 rounded-lg" max-width="800"
+              aspect-ratio="4/3" cover />
+          </div>
+        </v-card>
+      </v-window-item>
+
+      <!-- Zusätzlicher Slide für Bauinformationen -->
+      <v-window-item class="w-100 h-100">
+        <v-card :class="cardClass" color="rgba(65, 105, 225, 0.05)">
+          <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-coop_title">Bauinformationen</v-card-title>
+          <v-card-text class="overflow-y-auto text-coop_text">
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-list density="compact" class="bg-transparent">
+                  <v-list-subheader class="text-h6 font-weight-bold text-coop_title">Materialien</v-list-subheader>
+                  <v-list-item v-for="material in coopInfo.buildInfo.materials" :key="material">
+                    <template #prepend>
+                      <v-avatar size="32" color="primary">
+                        <v-icon color="white">mdi-hammer-screwdriver</v-icon>
+                      </v-avatar>
+                    </template>
+                    <v-list-item-title class="text-h6 text-sm-h6 text-xl-h5 text-coop_text">{{ material
+                      }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-list density="compact" class="bg-transparent">
+                  <v-list-subheader class="text-h6 font-weight-bold text-coop_title">Eigenschaften</v-list-subheader>
+                  <v-list-item v-for="feature in coopInfo.buildInfo.features" :key="feature">
+                    <template #prepend>
+                      <v-avatar size="32" color="accent">
+                        <v-icon color="white">mdi-star</v-icon>
+                      </v-avatar>
+                    </template>
+                    <v-list-item-title class="text-h6 text-sm-h6 text-xl-h5 text-coop_text">{{ feature
+                      }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-col>
+            </v-row>
+            <v-divider class="my-4"></v-divider>
+            <div class="text-center">
+              <v-chip size="large" color="primary" variant="elevated" class="text-white font-weight-medium">
+                <template #prepend>
+                  <v-icon>mdi-calendar</v-icon>
+                </template>
+                Baujahr: {{ coopInfo.buildInfo.year }}
+              </v-chip>
+              <v-chip size="large" color="secondary" variant="elevated" class="text-white font-weight-medium ml-2">
+                <template #prepend>
+                  <v-icon>mdi-ruler</v-icon>
+                </template>
+                Größe: {{ coopInfo.buildInfo.size }}
+              </v-chip>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-window-item>
+    </v-window>
   </div>
 </template>
 
@@ -24,73 +98,94 @@ export default {
     coopInfo: {
       type: Object,
       required: true
+    },
+    cardClass: {
+      type: String,
+      default: 'pa-3 mb-6 h-100 d-flex flex-column border-md border-dashed border-coop_card_boarder border-opacity-100 rounded-xl'
+    }
+  },
+  data() {
+    return {
+      activeSlide: 0,
+      scrollBuffer: 0,
+      edgeBuffer: 0,
+      requiredBufferScrolls: 8,
+      maxEdgeBuffer: 5,
     }
   },
   methods: {
     handleWheelScroll(event) {
-      if (event.deltaY != 0)
-        this.isScrolling = true;
-      else
-        this.isScrolling = false;
+      const dy = event.deltaY
 
-      // Optional: Implement horizontal scroll on vertical wheel event
-      const container = this.$refs.horizontalContainer
+      // Früher return für bessere Performance
+      if (Math.abs(dy) < 1) return
 
-      if (container) {
-        // Only scroll vertically if we are not at the end of the scroll area. but if we scroll vertical up we must scroll horizontal left
-        if ((event.deltaY < 0 && container.scrollLeft === 0) || (event.deltaY > 0 && container.scrollLeft + container.clientWidth >= container.scrollWidth)) {
-          return; // Prevent scrolling if at the edges
+      // Logik vereinfachen
+      const isAtEdge = (dy > 0 && this.atLast) || (dy < 0 && this.atFirst)
+
+      if (isAtEdge) {
+        this.edgeBuffer++
+        if (this.edgeBuffer < this.maxEdgeBuffer) {
+          event.preventDefault()
         }
-        container.scrollLeft += event.deltaY
-        event.preventDefault()
+        return
       }
-    },
+
+      this.edgeBuffer = 0
+      this.scrollBuffer++
+
+      if (this.scrollBuffer < this.requiredBufferScrolls) {
+        event.preventDefault()
+        return
+      }
+
+      // Navigation
+      if (dy > 0 && !this.atLast) {
+        this.activeSlide++
+      } else if (dy < 0 && !this.atFirst) {
+        this.activeSlide--
+      }
+
+      this.scrollBuffer = 0
+      event.preventDefault()
+    }
   },
   mounted() {
-
-    this.$el.addEventListener('wheel', this.handleWheelScroll, { passive: false })
+    // Wheel-Scroll Event-Listener für horizontale Navigation
+    // Auskommentiert für bessere Performance, kann bei Bedarf aktiviert werden
+    /*     this.$el.addEventListener('wheel', this.handleWheelScroll, {
+          passive: false,
+          capture: false
+        }) */
   },
   beforeUnmount() {
-
-    this.$el.removeEventListener('wheel', this.handleWheelScroll)
+    // Event-Listener aufräumen
+    //this.$el.removeEventListener('wheel', this.handleWheelScroll)
+  },
+  computed: {
+    totalSlides() {
+      // +1 für den zusätzlichen Bauinformationen-Slide
+      return (this.coopInfo?.sections?.length || 0) + 1
+    },
+    atFirst() {
+      return this.activeSlide === 0
+    },
+    atLast() {
+      return this.activeSlide === this.totalSlides - 1
+    }
   },
 }
 </script>
 
 <style scoped>
-.coop-content {
-  text-align: center;
-  width: 100vw;
-  height: 18vh;
-  padding: 2rem;
+/* Card & typography customization */
+:deep(.v-card-title) {
+  font-family: 'Georgia', serif !important;
 }
 
-.coop-content h1 {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  font-family: 'Georgia', serif;
-}
-
-.coop-description {
-  font-size: 1.5rem;
-  line-height: 1.6;
-}
-
-.coop-images {
-  width: 100vw;
-  height: 80vh;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.scroll-item {
-  min-width: 80vw;
-  width: 200vw;
-  padding-left: 10rem;
-  height: 80vh;
-  /* Jeder Bereich = Bildschirmbreite */
-  scroll-snap-align: start;
+:deep(.v-card-text),
+:deep(.v-list) {
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 </style>

@@ -1,17 +1,36 @@
 <template>
-  <div class="hero-content">
-    <h1 class="hero-title">🥚 Schuchardt Farm 🥚</h1>
-    <p class="hero-subtitle">Willkommen in unserem Hühnerparadies!</p>
-    <p class="hero-description">
-      Entdecken Sie unsere {{ totalBreeds }} erstaunlichen Hühnerarten und erkunden Sie unseren handgefertigten Stall.
-    </p>
+  <v-sheet class="d-flex flex-column justify-center align-center text-center h-100 w-100 px-8" elevation="0"
+    style="background:linear-gradient(135deg,rgb(var(--v-theme-backgroundhero)) 0%, rgb(var(--v-theme-background)) 100%);">
+    <v-container class="py-0">
+      <v-row class="justify-center">
+        <v-col cols="12" md="10" lg="8">
+          <h1
+            class="hero-title text-h3 text-sm-h2 text-xl-h1 font-weight-bold mb-4 text-white animate__animated animate__fadeInUp">
+            <span class="egg d-none d-md-inline">🥚</span>
+            <span class="title-text text-no-wrap">Schuchardt&nbsp;Farm</span>
+            <span class="egg d-none d-md-inline">🥚</span>
+          </h1>
 
-    <!-- Scroll indicator -->
-    <div class="scroll-indicator">
-      <span>Scrollen Sie, um zu erkunden</span>
-      <div class="scroll-arrow">↓</div>
-    </div>
-  </div>
+          <p class="text-h5 text-sm-h4 mb-4 text-white animate__animated animate__fadeInUp animate__delay-300ms">
+            Willkommen in unserem Hühnerparadies!
+          </p>
+          <p
+            class="text-subtitle-1 text-sm-h6 mb-8 text-white opacity-90 animate__animated animate__fadeInUp animate__delay-600ms">
+            Entdecken Sie unsere {{ totalBreeds }} erstaunlichen Hühnerarten und erkunden Sie unseren handgefertigten
+            Stall.
+          </p>
+          <div class="animate__animated animate__fadeInUp animate__delay-900ms">
+            <div class="text-caption mb-2 text-white opacity-80">
+              Scrollen Sie, um zu erkunden
+            </div>
+            <v-icon size="48" class="text-white animate__animated animate__infinite animate__bounce mt-6">
+              mdi-chevron-down
+            </v-icon>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-sheet>
 </template>
 
 <script>
@@ -35,96 +54,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.hero-content {
-  text-align: center;
-  max-width: 900px;
-  padding: 2rem;
-}
-
-.hero-title {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  font-family: 'Georgia', serif;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 1s ease-out;
-}
-
-.hero-subtitle {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  font-weight: 300;
-  animation: fadeInUp 1s ease-out 0.3s both;
-}
-
-.hero-description {
-  font-size: 1.3rem;
-  line-height: 1.6;
-  margin-bottom: 3rem;
-  opacity: 0.9;
-  animation: fadeInUp 1s ease-out 0.6s both;
-}
-
-.scroll-indicator {
-  animation: fadeInUp 1s ease-out 0.9s both;
-}
-
-.scroll-indicator span {
-  display: block;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  opacity: 0.8;
-}
-
-.scroll-arrow {
-  font-size: 2rem;
-  animation: bounce 2s infinite;
-}
-
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes bounce {
-
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0);
-  }
-
-  40% {
-    transform: translateY(-10px);
-  }
-
-  60% {
-    transform: translateY(-5px);
-  }
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.5rem;
-  }
-
-  .hero-subtitle {
-    font-size: 1.5rem;
-  }
-
-  .hero-description {
-    font-size: 1.1rem;
-  }
-}
-</style>
+<style scoped></style>

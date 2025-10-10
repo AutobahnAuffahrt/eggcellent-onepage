@@ -1,54 +1,80 @@
 <template>
-  <div class="breed-section-inner">
-    <v-card variant="tonal" class="w-100 pa-4 mb-6" elevation="2" style="position:sticky;top:0;z-index:10;">
-      <v-card-title class="text-h3">
+  <div class="breed-section-inner d-flex flex-column align-center h-screen w-100" style="width:100vw;overflow:hidden;">
+    <v-card variant="tonal" class="w-100 pa-4 mb-6 d-flex flex-column" elevation="2"
+      style="position:sticky;top:0;z-index:10;">
+      <v-card-title class="font-weight-bold text-h3 text-sm-h2 text-breed_title">
         {{ breed.name }}
       </v-card-title>
     </v-card>
-    <v-window class="w-75 h-75" ref="horizontalContainer" show-arrows="hover" v-model="activeSlide">
+
+    <v-window class="w-75 h-75 text-breed_text" ref="horizontalContainer" show-arrows="hover" v-model="activeSlide">
+      <template v-slot:prev="{ props }">
+        <v-btn icon color="primary" @click="props.onClick">
+          <v-icon>mdi-chevron-left</v-icon>
+        </v-btn>
+      </template>
+      <template v-slot:next="{ props }">
+        <v-btn icon color="primary" @click="props.onClick">
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+      </template>
+
       <v-window-item class="w-100 h-100">
-        <v-card title="Beschreibung" :text="breed.description" class="pa-2 mb-6 h-100 breed-card" variant="outlined" />
+        <v-card :class="cardClass" color="rgba(139, 69, 19, 0.05)">
+          <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-breed_title">Beschreibung</v-card-title>
+          <v-card-text class="overflow-y-auto text-h6 text-sm-h6 text-xl-h5 text-breed_text">{{ breed.description
+          }}</v-card-text>
+        </v-card>
       </v-window-item>
 
       <v-window-item class="w-100 h-100">
-        <v-card class="pa-2 mb-6 h-100" variant="outlined">
-          <v-list density="compact">
-            <v-card-title>Unsere {{ breed.name }} Hühner</v-card-title>
+        <v-card :class="cardClass" color="rgba(139, 69, 19, 0.05)">
+          <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-breed_title">Unsere
+            {{
+              breed.name
+            }}
+            Hühner</v-card-title>
+          <v-list density="compact" class="overflow-y-auto bg-transparent">
+
             <v-list-item v-for="chicken in breed.ourChickens" :key="chicken">
               <template #prepend>
-                <v-avatar class="chicken-avatar" size="32">
-                  <span class="chicken-head">🐔</span>
+                <v-avatar size="32">
+                  <span>🐔</span>
                 </v-avatar>
               </template>
-              <v-list-item-title>{{ chicken }}</v-list-item-title>
+              <v-list-item-title class="overflow-y-auto text-h6 text-sm-h6 text-xl-h5 text-breed_text">{{ chicken
+              }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-card>
       </v-window-item>
 
       <v-window-item class="w-100 h-100">
-        <v-card variant="outlined" class="pa-2 mb-6 h-100">
-          <v-card-title>Besondere Merkmale</v-card-title>
-          <v-chip-group column class="d-flex flex-wrap gap-2">
-            <v-chip v-for="s in breed.specialties" :key="s" size="large" class="specialty-chip"
-              prepend-icon="mdi-sparkles" variant="elevated">
-              ✨ {{ s }}
+        <v-card :class="cardClass" color="rgba(139, 69, 19, 0.05)">
+          <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-breed_title">Besondere Merkmale</v-card-title>
+          <v-chip-group column class="d-flex flex-wrap">
+            <v-chip v-for="s in breed.specialties" :key="s" size="large" prepend-icon="mdi-creation-outline"
+              variant="elevated" color="primary" class="text-white font-weight-medium bg-primary">
+              <template #prepend>
+                <v-icon color="accent">mdi-creation-outline</v-icon>
+              </template>
+              {{ s }}
             </v-chip>
           </v-chip-group>
         </v-card>
       </v-window-item>
 
       <v-window-item class="w-100 h-100">
-        <v-card variant="outlined" class="pa-2 mb-6 h-100">
-          <v-card-title>Foto</v-card-title>
-          <v-img class="justify-center mx-auto d-block" :width="300" aspect-ratio="1/1" cover :src="breed.image"
-            alt="Foto von {{ breed.name }}" />
+        <v-card :class="cardClass" color="rgba(139, 69, 19, 0.05)">
+          <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-breed_title">Foto</v-card-title>
+          <v-img class="pl-16 justify-center mx-auto d-block" :width="600" aspect-ratio="1/1" :src="breed.image"
+            :alt="`Foto von ${breed.name}`" />
         </v-card>
       </v-window-item>
 
       <v-window-item class="w-100 h-100">
-        <v-card variant="outlined" class="pa-2 mb-6 h-100">
-          <v-card-title>Huhn Animiert</v-card-title>
+        <v-card :class="cardClass" color="rgba(139, 69, 19, 0.05)">
+          <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-breed_title">Huhn Animiert</v-card-title>
           <div class="animated-chicken" role="img" aria-label="Animiertes Huhn läuft hin und her">
             <span class="chicken-animation">🐔</span>
           </div>
@@ -65,6 +91,10 @@ export default {
     breed: {
       type: Object,
       required: true
+    },
+    cardClass: {
+      type: String,
+      default: 'pa-3 mb-6 h-100 d-flex flex-column border-md border-dashed border-breed_card_boarder border-opacity-100 rounded-xl'
     }
   },
   data() {
@@ -115,13 +145,13 @@ export default {
   },
   mounted() {
     // Passive: false nur wenn nötig, sonst Performance-Einbuße
-    this.$el.addEventListener('wheel', this.handleWheelScroll, {
-      passive: false,
-      capture: false // Explizit für Klarheit
-    })
+    /*     this.$el.addEventListener('wheel', this.handleWheelScroll, {
+          passive: false,
+          capture: false // Explizit für Klarheit
+        }) */
   },
   beforeUnmount() {
-    this.$el.removeEventListener('wheel', this.handleWheelScroll)
+    //this.$el.removeEventListener('wheel', this.handleWheelScroll)
   },
   computed: {
     totalSlides() {
@@ -138,38 +168,6 @@ export default {
 </script>
 
 <style scoped>
-.breed-section-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-  overflow-y: hidden;
-
-  /* Fehlende CSS Variablen definieren */
-  --breed-card-width: 100%;
-  --breed-card-height: 100%;
-
-  /* chip theme vars */
-  --specialty-chip-bg: #8B4513;
-  --specialty-chip-bg-hover: #A96122;
-  --specialty-chip-icon: #FFD479;
-}
-
-.breed-card {
-  width: var(--breed-card-width);
-  height: var(--breed-card-height);
-  display: flex;
-  flex-direction: column;
-}
-
-.breed-card :deep(.v-card-text),
-.breed-card :deep(.v-list) {
-  flex: 1;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-
 /* Animated chicken */
 .animated-chicken {
   margin-top: 2rem;
@@ -195,64 +193,20 @@ export default {
   }
 }
 
-/* Vuetify Card Styling */
-:deep(.v-card) {
-  background: rgba(139, 69, 19, 0.05) !important;
-  border: 2px solid #CD853F !important;
-  border-radius: 15px !important;
-  box-shadow: 0 4px 8px rgba(139, 69, 19, 0.2) !important;
-}
+/* Card & typography customization still custom (wenn du willst → Theme defaults) */
 
 :deep(.v-card-title) {
-  color: #8B4513 !important;
   font-family: 'Georgia', serif !important;
-  /* Fluid zwischen 2rem (klein), 6vw (dynamisch), 3.5rem (max) */
-  font-size: clamp(1.2rem, 4vw, 2.5rem) !important;
-  font-weight: bold !important;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1) !important;
-  line-height: 1.1 !important;
-  margin-bottom: 1.2rem !important;
 }
 
-:deep(.v-card-text) {
-  color: #654321 !important;
-  font-size: clamp(0.875rem, 3vw, 1.2rem) !important;
-  line-height: 1.6 !important;
-}
-
+:deep(.v-card-text),
 :deep(.v-list) {
-  background: transparent !important;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 :deep(.v-list-item-title) {
-  font-size: clamp(0.5rem, 6vw, 1.2rem) !important;
   color: #5A3E1B !important;
   font-weight: 500 !important;
-}
-
-/* Specialty chips */
-:deep(.specialty-chip) {
-  background-color: var(--specialty-chip-bg) !important;
-  color: #FFFFFF !important;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  border: 2px solid #CD853F !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-  transition: background-color 0.25s ease, transform 0.2s ease;
-}
-
-:deep(.specialty-chip .v-icon) {
-  color: var(--specialty-chip-icon) !important;
-  opacity: 0.9;
-}
-
-:deep(.specialty-chip:hover) {
-  background-color: var(--specialty-chip-bg-hover) !important;
-  transform: translateY(-2px);
-}
-
-:deep(.specialty-chip:active) {
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 </style>

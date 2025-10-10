@@ -1,19 +1,40 @@
 <template>
-  <div class="page-wrapper">
-    <!-- Hero Section - Full Screen -->
-    <section id="hero" class="full-section hero-section">
-      <hero-section />
-    </section>
+  <div id="app">
+    <v-app>
+      <v-main>
+        <v-container class="scroller page-wrapper w-100 h-screen" fluid>
 
-    <!-- Breed Sections - Each breed gets its own full screen -->
-    <section v-for="breed in breeds" :key="breed.id" :id="`breed-${breed.id}`" class="full-section breed-section">
-      <breed-section :breed="breed" />
-    </section>
+          <!-- Hero Section - Full Screen -->
+          <v-row id="hero" class="full-section hero-section h-screen d-flex align-stretch justify-center text-white">
+            <hero-section />
+          </v-row>
 
-    <!-- Coop Section - Full Screen -->
-    <section id="coop" class="full-section coop-section">
-      <coop-section :coopInfo="coopInfo" />
-    </section>
+          <!-- Breed Sections - Each breed gets its own full screen -->
+          <v-row v-for="breed in breeds" :key="breed.id" :id="`breed-${breed.id}`"
+            class="full-section breed-section h-screen d-flex align-center justify-center"
+            :class="(breed.id % 2) ? 'bg-background_breeds_odd' : 'bg-background_breeds_even'">
+            <breed-section :breed="breed" />
+          </v-row>
+
+          <!-- Coop Section - Full Screen -->
+          <v-row id="coop"
+            class="full-section coop-section h-screen d-flex align-center justify-center bg-background_coop">
+            <coop-section :coopInfo="coopInfo" />
+          </v-row>
+
+        </v-container>
+      </v-main>
+
+      <!-- Sticky Footer -->
+      <v-footer app color="footer" class="bg-background_footer d-flex text-white">
+        <span>© 2024 AutobahnAuffahrt</span>
+      </v-footer>
+
+      <!-- Toast/Snackbar -->
+      <v-snackbar v-model="snackbar">
+        Erfolgreich gespeichert!
+      </v-snackbar>
+    </v-app>
   </div>
 </template>
 
@@ -22,6 +43,8 @@ import HeroSection from '@/components/HeroSection.vue'
 import BreedSection from '@/components/BreedSection.vue'
 import CoopSection from '@/components/CoopSection.vue'
 import { useBreedsStore } from '../stores/breeds.js'
+
+
 
 export default {
   name: 'HomeView',
@@ -33,7 +56,7 @@ export default {
   setup() {
     const breedsStore = useBreedsStore()
     return {
-      breedsStore
+      breedsStore,
     }
   },
 
@@ -58,70 +81,20 @@ export default {
 
 /* Full-screen sections */
 .full-section {
-  width: 100vw;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
   scroll-snap-align: start;
-  overflow: hidden;
 }
 
 /* Hero Section Styling */
 .hero-section {
-  background: linear-gradient(135deg, #8B4513 0%, #D2B48C 100%);
-  color: white;
+  background: linear-gradient(135deg,
+      rgb(var(--v-theme-backgroundhero)) 0%,
+      rgb(var(--v-theme-background)) 100%);
 }
-
-/* Breed Section Styling */
-.breed-section {
-  background: #F5F5DC;
-  /* Beige background */
-  color: #654321;
-  padding: 0rem;
-}
-
-.breed-section:nth-child(even) {
-  background: #FAEBD7;
-  /* Alternate background for variety */
-}
-
-/* Coop Section Styling */
-.coop-section {
-  background: linear-gradient(135deg, #4169E1 0%, #87CEEB 100%);
-  color: white;
-}
-
-
 
 /* Smooth scrolling for the entire page */
 html {
   scroll-behavior: smooth;
   scroll-snap-type: y proximity;
   /* Schnappt nur wenn nahe genug */
-}
-
-
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .section-nav {
-    right: 1rem;
-  }
-
-  .nav-dot {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1rem;
-  }
-
-  .coop-content h1 {
-    font-size: 2.5rem;
-  }
-
-  .coop-description {
-    font-size: 1.2rem;
-  }
 }
 </style>
