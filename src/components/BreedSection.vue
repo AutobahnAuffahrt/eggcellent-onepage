@@ -72,14 +72,14 @@
         </v-card>
       </v-window-item>
 
-      <v-window-item class="w-100 h-100">
+      <!--  <v-window-item class="w-100 h-100">
         <v-card :class="cardClass" color="rgba(139, 69, 19, 0.05)">
           <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-breed_title">Huhn Animiert</v-card-title>
           <div class="animated-chicken" role="img" aria-label="Animiertes Huhn läuft hin und her">
             <span class="chicken-animation">🐔</span>
           </div>
         </v-card>
-      </v-window-item>
+      </v-window-item> -->
     </v-window>
   </div>
 </template>

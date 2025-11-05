@@ -46,7 +46,7 @@ const vuetify = createVuetify({
         dark: false, // oder true für Dark Mode
         colors: {
           // Primäre Farben
-          primary: '#8B4513',          // Earthy primary (statt Blau)
+          primary: '#8B4513',          // Earthy primary
           secondary: '#654321',        // Dark brown (Text / Kontrast)
           accent: '#FFC107',           // Warm highlight
           success: '#4CAF50',
@@ -61,7 +61,7 @@ const vuetify = createVuetify({
           background_breeds_even: '#FAEBD7', // AntiqueWhite
           background_breeds_odd: '#F5F5DC',  // Beige
           background_coop: '#4169E1',       // Coop gradient start
-          background_coop_to: '#87CEEB',    // Coop gradient end
+          background_coop_to: '#587be5',    // Coop gradient end
           background_footer: '#422910ff',         // Dark brown footer
 
           // Custom Farben
@@ -70,7 +70,7 @@ const vuetify = createVuetify({
           breed_card_boarder: '#CD853F', // Peru
           coop_title: '#FAEBD7',         // Blue für Coop-Titel
           coop_text: '#F5F5DC',          // Dunkelblau für Coop-Text
-          coop_card_boarder: '#42A5F5',  // Hellblau für Coop-Card-Rahmen
+          coop_card_boarder: '#587be5',  // Hellblau für Coop-Card-Rahmen
           brand: '#6366F1',        // Ihre Markenfarbe
           highlight: '#FFC107',    // Highlight-Farbe
         }

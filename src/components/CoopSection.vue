@@ -9,85 +9,86 @@
         {{ coopInfo.description }}
       </v-card-subtitle>
     </v-card>
+    <div class="flex-1-1 w-75">
+      <v-window class="h-100 w-100 text-coop_text" ref="horizontalContainer" show-arrows="hover" v-model="activeSlide">
+        <template v-slot:prev="{ props }">
+          <v-btn icon color="coop_card_boarder" @click="props.onClick">
+            <v-icon>mdi-chevron-left</v-icon>
+          </v-btn>
+        </template>
+        <template v-slot:next="{ props }">
+          <v-btn icon color="coop_card_boarder" @click="props.onClick">
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-btn>
+        </template>
 
-    <v-window class="w-75 h-75 text-coop_text" ref="horizontalContainer" show-arrows="hover" v-model="activeSlide">
-      <template v-slot:prev="{ props }">
-        <v-btn icon color="primary" @click="props.onClick">
-          <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
-      </template>
-      <template v-slot:next="{ props }">
-        <v-btn icon color="primary" @click="props.onClick">
-          <v-icon>mdi-chevron-right</v-icon>
-        </v-btn>
-      </template>
-
-      <v-window-item v-for="(item, index) in coopInfo.sections" :key="index" class="w-100 h-100">
-        <v-card :class="cardClass" color="rgba(65, 105, 225, 0.05)">
-          <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-coop_title">{{ item.title }}</v-card-title>
-          <v-card-text class="overflow-y-auto text-h6 text-sm-h6 text-xl-h5 text-coop_text mb-4">{{ item.content
+        <v-window-item v-for="(item, index) in coopInfo.sections" :key="index" class="w-100 h-100">
+          <v-card :class="cardClass" color="rgba(65, 105, 225, 0.05)">
+            <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-coop_title">{{ item.title }}</v-card-title>
+            <v-card-text class="overflow-y-auto text-h6 text-sm-h6 text-xl-h5 text-coop_text mb-4">{{ item.content
             }}</v-card-text>
-          <div class="d-flex justify-center">
-            <v-img :src="item.image" :alt="`Foto von ${item.title}`" class="pl-16 rounded-lg" max-width="800"
-              aspect-ratio="4/3" cover />
-          </div>
-        </v-card>
-      </v-window-item>
-
-      <!-- Zusätzlicher Slide für Bauinformationen -->
-      <v-window-item class="w-100 h-100">
-        <v-card :class="cardClass" color="rgba(65, 105, 225, 0.05)">
-          <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-coop_title">Bauinformationen</v-card-title>
-          <v-card-text class="overflow-y-auto text-coop_text">
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-list density="compact" class="bg-transparent">
-                  <v-list-subheader class="text-h6 font-weight-bold text-coop_title">Materialien</v-list-subheader>
-                  <v-list-item v-for="material in coopInfo.buildInfo.materials" :key="material">
-                    <template #prepend>
-                      <v-avatar size="32" color="primary">
-                        <v-icon color="white">mdi-hammer-screwdriver</v-icon>
-                      </v-avatar>
-                    </template>
-                    <v-list-item-title class="text-h6 text-sm-h6 text-xl-h5 text-coop_text">{{ material
-                      }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-list density="compact" class="bg-transparent">
-                  <v-list-subheader class="text-h6 font-weight-bold text-coop_title">Eigenschaften</v-list-subheader>
-                  <v-list-item v-for="feature in coopInfo.buildInfo.features" :key="feature">
-                    <template #prepend>
-                      <v-avatar size="32" color="accent">
-                        <v-icon color="white">mdi-star</v-icon>
-                      </v-avatar>
-                    </template>
-                    <v-list-item-title class="text-h6 text-sm-h6 text-xl-h5 text-coop_text">{{ feature
-                      }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-col>
-            </v-row>
-            <v-divider class="my-4"></v-divider>
-            <div class="text-center">
-              <v-chip size="large" color="primary" variant="elevated" class="text-white font-weight-medium">
-                <template #prepend>
-                  <v-icon>mdi-calendar</v-icon>
-                </template>
-                Baujahr: {{ coopInfo.buildInfo.year }}
-              </v-chip>
-              <v-chip size="large" color="secondary" variant="elevated" class="text-white font-weight-medium ml-2">
-                <template #prepend>
-                  <v-icon>mdi-ruler</v-icon>
-                </template>
-                Größe: {{ coopInfo.buildInfo.size }}
-              </v-chip>
+            <div class="d-flex justify-center">
+              <v-img :src="item.image" :alt="`Foto von ${item.title}`" class="pl-16 rounded-lg" max-width="800"
+                aspect-ratio="4/3" cover />
             </div>
-          </v-card-text>
-        </v-card>
-      </v-window-item>
-    </v-window>
+          </v-card>
+        </v-window-item>
+
+        <!-- Zusätzlicher Slide für Bauinformationen -->
+        <v-window-item class="w-100 h-100">
+          <v-card :class="cardClass" color="rgba(65, 105, 225, 0.05)">
+            <v-card-title class="font-weight-bold text-h4 text-sm-h3 text-coop_title">Bauinformationen</v-card-title>
+            <v-card-text class="overflow-y-auto text-coop_text">
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-list density="compact" class="bg-transparent">
+                    <v-list-subheader class="text-h6 font-weight-bold text-coop_title">Materialien</v-list-subheader>
+                    <v-list-item v-for="material in coopInfo.buildInfo.materials" :key="material">
+                      <template #prepend>
+                        <v-avatar size="32" color="primary">
+                          <v-icon color="white">mdi-hammer-screwdriver</v-icon>
+                        </v-avatar>
+                      </template>
+                      <v-list-item-title class="text-h6 text-sm-h6 text-xl-h5 text-coop_text">{{ material
+                      }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-list density="compact" class="bg-transparent">
+                    <v-list-subheader class="text-h6 font-weight-bold text-coop_title">Eigenschaften</v-list-subheader>
+                    <v-list-item v-for="feature in coopInfo.buildInfo.features" :key="feature">
+                      <template #prepend>
+                        <v-avatar size="32" color="accent">
+                          <v-icon color="white">mdi-star</v-icon>
+                        </v-avatar>
+                      </template>
+                      <v-list-item-title class="text-h6 text-sm-h6 text-xl-h5 text-coop_text">{{ feature
+                      }}</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-col>
+              </v-row>
+              <v-divider class="my-4"></v-divider>
+              <div class="text-center">
+                <v-chip size="large" color="primary" variant="elevated" class="text-white font-weight-medium">
+                  <template #prepend>
+                    <v-icon>mdi-calendar</v-icon>
+                  </template>
+                  Baujahr: {{ coopInfo.buildInfo.year }}
+                </v-chip>
+                <v-chip size="large" color="secondary" variant="elevated" class="text-white font-weight-medium ml-2">
+                  <template #prepend>
+                    <v-icon>mdi-ruler</v-icon>
+                  </template>
+                  Größe: {{ coopInfo.buildInfo.size }}
+                </v-chip>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-window-item>
+      </v-window>
+    </div>
   </div>
 </template>
 
@@ -101,7 +102,7 @@ export default {
     },
     cardClass: {
       type: String,
-      default: 'pa-3 mb-6 h-100 d-flex flex-column border-md border-dashed border-coop_card_boarder border-opacity-100 rounded-xl'
+      default: 'pa-3 mb-6 d-flex flex-column border-md border-dashed border-coop_card_boarder border-opacity-100 rounded-xl'
     }
   },
   data() {
